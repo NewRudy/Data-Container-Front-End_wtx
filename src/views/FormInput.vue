@@ -1,8 +1,13 @@
 import Content from '@/views/Content';
 <template>
   <div class="form" v-loading.fullscreen.lock="submitUploadLoading">
-    <el-row :gutter="20" >
-      
+    <el-switch
+      v-model="instanceModel"
+      style="margin: 7px"
+      active-text="地理模型应用版"
+      inactive-text="简洁版">
+    </el-switch>
+    <el-row :gutter="20" v-if="instanceModel">
        <el-col :span="this.$route.query.type==='Data'?6:0" class="category">
               <el-card class="box-card categoryList" style="margin-left:20px">
                     <div slot="header" class="clearfix text-center">
@@ -558,6 +563,40 @@ import Content from '@/views/Content';
       </el-col>
       <!-- 工作空间复用页面部分 结束-->
     </el-row>
+
+    <el-row :gutter="20" v-if="!instanceModel">
+      <el-col span="18" offset="2">
+        <el-form v-if="this.$route.query.type==='Data'" label-width="200px" :model="simpleForm" style="margin-top: 60px">
+          <el-form-item label="Name:">
+            <el-input  v-model="simpleForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="Local Folder URL:">
+            <el-input  v-model="simpleForm.folder"></el-input>
+          </el-form-item>
+          <el-form-item label="Local XML Folder URL:">
+            <el-input  v-model="simpleForm.xmlFolder"></el-input>
+          </el-form-item>
+          <el-form-item label="separationOrMerge:">
+              <el-switch
+                v-model="simpleForm.isMerge"
+                active-text="merge"
+                inactive-text="separation">
+              </el-switch>
+          </el-form-item>
+          <el-form-item label="Authority:">
+              <el-switch
+                v-model="simpleForm.authority"
+                active-text="public"
+                inactive-text="private">
+              </el-switch>
+          </el-form-item>
+          <el-form-item style="text-align: center">
+            <el-button type="primary" @click="submitSimpleForm">立即创建</el-button>
+            <el-button>取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -570,6 +609,22 @@ export default {
   props: ["user"],
   data() {
     return {
+      instanceModel: true,
+      simpleForm: {
+        name: '',
+        folder: '',
+        xmlFolder: '',
+        isMerge: true,
+        authority: true,
+      },
+      options: [{
+          value: 'separation',
+          label: 'separation'
+        }, {
+          value: 'merge',
+          label: 'merge'
+        }],
+
       form: {
         workspace:"",
         name: "",
@@ -723,6 +778,73 @@ export default {
   },
   
   methods: {
+    submitSimpleForm() {
+      if(this.simpleForm.name == '' || this.simpleForm.folder == '') {
+        alert("please complete content!")
+        return;
+      }
+      let _this = this;
+      let newFolder;
+      if(_this.simpleForm.isMerge) {
+        newFolder = {
+        // 文件信息
+        id: uuidv4(),
+        name: _this.simpleForm.name,
+        date: utils.formatDate(new Date()),
+        type: 'file',
+        isMerge: _this.simpleForm.isMerge,
+        authority: _this.simpleForm.authority,
+        folder: _this.simpleForm.folder,
+        xmlFolder: _this.simpleForm.xmlFolder
+        }
+      } else {
+        newFolder = {
+        // 文件信息
+        id: uuidv4(),
+        name: _this.simpleForm.name,
+        date: utils.formatDate(new Date()),
+        type: 'folder',
+        isMerge: _this.simpleForm.isMerge,
+        authority: _this.simpleForm.authority,
+        folder: _this.simpleForm.folder,
+        xmlFolder: _this.simpleForm.xmlFolder,
+        subContentId: ''
+        }
+      }
+      newFolder = Object.assign(newFolder, {
+        //instance基本信息
+        uid:_this.$route.query.instance_uid ? _this.$route.query.instance_uid : '0',
+        instype:_this.$route.query.type,
+        userToken:_this.$route.query.userToken,
+        //关联用户信息
+        oid:localStorage.getItem('relatedUsr'),
+      })
+      console.log('folder: ', newFolder)
+      this.submitUploadLoading = true
+      this.$axios.put('/api/simple/newFolder', newFolder, {timeout: 600000}).then(
+        res => {
+          _this.submitUploadLoading = false
+          if(res.data.code === -1) {
+                      let msg = res.data.message;
+            _this.$message({
+                message: msg,
+                type: 'fail'
+            });
+          } else if (res.data.code === 0) {
+            if(_this.$route.query.type==='Data'){
+                 
+               _this.$router.push({path:'/instance',query:{type:'Data'}})
+                _this.$message({
+                        message: 'create success ',
+                        type: 'success'
+                    });
+
+            }      
+          }
+        }
+      )
+    },
+
     chooseCate(cateId){
         //this.categories.cateId=cateId
         let obj={id:cateId,cateId:document.getElementById(cateId).firstElementChild.innerHTML,type: 'success'}
@@ -1283,7 +1405,7 @@ export default {
 
 <style>
 .form{
-    margin-top: 50px;
+    margin-top: 20px;
     min-width: 1200px;
 }
 .upload {

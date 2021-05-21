@@ -20,7 +20,7 @@ const websocket=function(it){
         //连接中转服务器websocket
         let heartBeat
         if(_this.$root.$el.myWS==undefined){
-           var ws = new WebSocket('ws://172.21.213.174:1708');
+           var ws = new WebSocket('ws://111.229.14.128:1708');
            
           _this.$root.$el.myWS=ws
            ws.onopen = function(e){
