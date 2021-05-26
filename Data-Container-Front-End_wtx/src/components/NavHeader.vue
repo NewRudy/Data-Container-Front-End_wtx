@@ -44,7 +44,7 @@
              
               <el-form :model="connectPortalUsr" status-icon   ref="ruleForm" label-width="170px" class="demo-ruleForm">
               <el-form-item label="Account:" prop="account">
-                <el-input type="text" v-model="connectPortalUsr.email" autocomplete="off"></el-input>
+                <el-input type="text" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item  label="Your Token:" >
                                 <el-input type="text" v-model="yourToken" ref="myOwnToken" readonly>
@@ -52,7 +52,7 @@
                                 </el-input> 
                 </el-form-item>
                 <el-form-item label="Python Environment:" prop="environment">
-                <el-input type="text" v-model="pythonEnv" autocomplete="off"></el-input>
+                <el-input type="text"  autocomplete="off"></el-input>
               </el-form-item>
               </el-form>
             <span slot="footer" class="dialog-footer">

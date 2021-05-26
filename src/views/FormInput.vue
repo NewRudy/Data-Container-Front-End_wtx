@@ -573,8 +573,28 @@ import Content from '@/views/Content';
           <el-form-item label="Local Folder URL:">
             <el-input  v-model="simpleForm.path"></el-input>
           </el-form-item>
-          <el-form-item label="Local XML Folder URL:">
+          <el-form-item label="Local XML Folder Name:">
             <el-input  v-model="simpleForm.xmlPath"></el-input>
+          </el-form-item>
+          <!-- 标签 -->
+          <el-form-item label="Keywords" prop="name">
+            <el-tag
+              :key="tag"
+              v-for="tag in form.dynamicTags"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+            >{{tag}}</el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible"
+              v-model="inputValue"
+              ref="saveTagInput"
+              size="small"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
+            ></el-input>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ add Tags</el-button>
           </el-form-item>
           <el-form-item label="separationOrMerge:">
               <el-switch
@@ -632,7 +652,7 @@ export default {
         uid:'',
         fileDataType:'File',
         // tag
-        dynamicTags: ["gis",'地理学'],
+        dynamicTags: [],
         desc: "",
         detail:"",
         authority:true,
@@ -792,6 +812,7 @@ export default {
         isMerge: _this.simpleForm.isMerge,
         authority: _this.simpleForm.authority,
         path: _this.simpleForm.path,
+        keywords:_this.form.dynamicTags,
       }
       if(!_this.simpleForm.isMerge) {
         newFolder.type = 'folder'
