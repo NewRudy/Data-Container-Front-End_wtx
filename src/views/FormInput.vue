@@ -571,10 +571,10 @@ import Content from '@/views/Content';
             <el-input  v-model="simpleForm.name"></el-input>
           </el-form-item>
           <el-form-item label="Local Folder URL:">
-            <el-input  v-model="simpleForm.folder"></el-input>
+            <el-input  v-model="simpleForm.path"></el-input>
           </el-form-item>
           <el-form-item label="Local XML Folder URL:">
-            <el-input  v-model="simpleForm.xmlFolder"></el-input>
+            <el-input  v-model="simpleForm.xmlPath"></el-input>
           </el-form-item>
           <el-form-item label="separationOrMerge:">
               <el-switch
@@ -612,7 +612,7 @@ export default {
       instanceModel: true,
       simpleForm: {
         name: '',
-        folder: '',
+        path: '',
         xmlFolder: '',
         isMerge: true,
         authority: true,
@@ -784,32 +784,21 @@ export default {
         return;
       }
       let _this = this;
-      let newFolder;
-      if(_this.simpleForm.isMerge) {
-        newFolder = {
-        // 文件信息
+      let newFolder = {
         id: uuidv4(),
         name: _this.simpleForm.name,
         date: utils.formatDate(new Date()),
         type: 'file',
         isMerge: _this.simpleForm.isMerge,
         authority: _this.simpleForm.authority,
-        folder: _this.simpleForm.folder,
-        xmlFolder: _this.simpleForm.xmlFolder
-        }
-      } else {
-        newFolder = {
-        // 文件信息
-        id: uuidv4(),
-        name: _this.simpleForm.name,
-        date: utils.formatDate(new Date()),
-        type: 'folder',
-        isMerge: _this.simpleForm.isMerge,
-        authority: _this.simpleForm.authority,
-        folder: _this.simpleForm.folder,
-        xmlFolder: _this.simpleForm.xmlFolder,
-        subContentId: ''
-        }
+        path: _this.simpleForm.path,
+      }
+      if(!_this.simpleForm.isMerge) {
+        newFolder.type = 'folder'
+        newFolder['subContentId'] = ''
+      }
+      if(_this.simpleForm.xmlPath != '') {
+        newFolder['xmlPath'] = _this.simpleForm.xmlPath
       }
       newFolder = Object.assign(newFolder, {
         //instance基本信息

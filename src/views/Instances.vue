@@ -123,7 +123,7 @@
                         
                     </div>
                     <div v-if="publicOption=='geoproblem'" style="margin-top:50px">
-                        <h3>Are you sure to share this data on GeoProblems Solving Plartform:</h3><br><br><br></h3>
+                        <h3>Are you sure to share this data on GeoProblems Solving Plartform:<br><br><br></h3>
                         <!-- <p> Current connected account in GeoProblems Solving Plartform is  <br><br><strong>{{connectPortalUsr}}</strong> </p> -->
 
                     </div>
@@ -531,6 +531,17 @@
 
 
                     </el-row>
+                      <el-pagination
+                        style='margin-top: 25px; float: right'
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        :current-page="currentPage"
+                        :hide-on-single-page="total <= pageSize ? true : false"
+                        :page-sizes="[10, 20, 30, 40]"
+                        :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="total">
+                      </el-pagination>
                  </div>
             
         
@@ -561,6 +572,12 @@ export default {
             Avatar
     },
     data: () => ({
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+        nowGetDataListFunc: '',     // 记录现在返回的函数，为了重新分页
+        nowGetDataListData: '',
+
         //select workspace massagebox visiable attribute
        selectWorkspaceList: false,
        //newFloderName
@@ -725,8 +742,9 @@ export default {
                 
                 
                 _this.instancesCont=res.data.data
-                _this.originList=res.data.data.list
+
                 _this.instanceLayer=[initList] 
+                _this.total = res.data.total
             }
             
         })
@@ -752,6 +770,19 @@ export default {
         
     },
     methods:{
+        // 分页的函数
+        handleSizeChange(val) {
+          this.pageSize = val
+          console.log('pageSize: ', this.pageSize)
+          if(this.nowGetDataListFunc && this.nowGetDataListFunc != '') this.nowGetDataListFunc(this.nowGetDataListData)
+        },
+        handleCurrentChange(val) {
+          this.currentPage = val
+          console.log('currentPage: ', this.currentPage)
+          if(this.nowGetDataListFunc && this.nowGetDataListFunc != '') this.nowGetDataListFunc(this.nowGetDataListData)
+        },
+
+
         imgVisualization(id){
             // this.imgVisualizationDialog=true
             this.$axios.get('/api/visualresult',{
@@ -1030,7 +1061,9 @@ export default {
                 subContConnect:{
                     uid:_this.instancesCont.uid,
                     id:Folder.id
-                }//关联文件下的子instances
+                },//关联文件下的子instances
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
             }
 
             this.$axios.get('/api/instances',{
@@ -1043,6 +1076,8 @@ export default {
                         });
                 }else{
                     _this.instancesCont=res.data.data
+
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayer.push(Folder.name)
                     _this.instanceLayer.push({
@@ -1051,7 +1086,8 @@ export default {
                         parentLevel:_this.instancesCont.parentLevel,
                         userToken:_this.instancesCont.userToken
                     })
-                    
+                    _this.nowGetDataListFunc = _this.intoFolder
+                    _this.nowGetDataListData = Folder
                 }
             });
             
@@ -1059,6 +1095,8 @@ export default {
         intoMethodDataFolder(Folder){
             let _this=this
             let info={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
                 type:'Data',
@@ -1079,6 +1117,7 @@ export default {
                         });
                 }else{
                     _this.chooseMethodInstancesCont=res.data.data
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayerMethodDataChooseData.push(Folder.name)
                     _this.instanceLayerMethodChooseData.push({
@@ -1087,7 +1126,8 @@ export default {
                         parentLevel:_this.chooseMethodInstancesCont.parentLevel,
                         userToken:_this.chooseMethodInstancesCont.userToken
                     })
-                    
+                    _this.nowGetDataListFunc = _this.intoMethodDataFolder
+                    _this.nowGetDataListData = Folder
                 }
             });
             
@@ -1097,6 +1137,8 @@ export default {
 
             let _this=this
             let info={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
                 type:'DataOut',
@@ -1117,6 +1159,7 @@ export default {
                         });
                 }else{
                     _this.dataOutCont=res.data.data
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayerDataOut.push(Folder.name)
                     _this.instanceLayerDataOut.push({
@@ -1125,7 +1168,8 @@ export default {
                         parentLevel:_this.dataOutCont.parentLevel,
                         userToken:_this.dataOutCont.userToken
                     })
-                    
+                    _this.nowGetDataListFunc = _this.intoDataOutFolder
+                    _this.nowGetDataListData = Folder
                 }
             });
         },
@@ -1149,8 +1193,7 @@ export default {
                         });
                 }else{
                     _this.instancesCont=res.data.data
-                   
-                    
+                   _this.total = res.data.total
                 }
             })
 
@@ -1173,7 +1216,7 @@ export default {
                         });
                 }else{
                     _this.chooseMethodInstancesCont=res.data.data
-                   
+                   _this.total = res.data.total
                     
                 }
             })
@@ -1197,7 +1240,7 @@ export default {
                         });
                 }else{
                     _this.dataOutCont=res.data.data
-                    
+                    _this.total = res.data.total
                 }
             })
 
@@ -1399,10 +1442,14 @@ export default {
            
             let _this=this
             let initList={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 type: _this.$route.query.type,
                 uid:0,
                 parentLevel:'-1',
-                userToken:localStorage.getItem('Authorization')
+                userToken:localStorage.getItem('Authorization'),
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
             }
             if(this.$store.state.currentWorkSpace!=undefined&&initList.parentLevel=='-1'){
             initList['workSpace']=this.$store.state.currentWorkSpace.uid
@@ -1421,7 +1468,9 @@ export default {
                 }else{
                      
                     _this.instancesCont=res.data.data
-                    _this.originList=res.data.data.list
+
+                    _this.total = res.data.total
+                    _this.nowGetDataListFunc = _this.watchrouter
                 }
                 
             })
@@ -1687,7 +1736,9 @@ export default {
             type: 'Data',
             uid:'0',
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization')
+            userToken:localStorage.getItem('Authorization'),
+            currentPage: _this.currentPage,
+            pageSize: _this.pageSize,
         }
         
        
@@ -1703,7 +1754,7 @@ export default {
                         type: 'fail'
                     });
             }else{
-           
+                _this.total = res.data.total
                 _this.methodInputLoading=false
                 _this.chooseMethodInstancesCont=res.data.data
                 _this.instanceLayerMethodChooseData=[initInputList] 
@@ -1713,7 +1764,9 @@ export default {
             type: 'DataOut',
             uid:'0',
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization')
+            userToken:localStorage.getItem('Authorization'),
+            currentPage: _this.currentPage,
+            pageSize: _this.pageSize,
         }
         // 输出
         this.$axios.get('/api/instances',{
@@ -1726,7 +1779,7 @@ export default {
                         type: 'fail'
                     });
             }else{
-            
+                _this.total = res.data.total
                 _this.methodOutputLoading=false
                 _this.dataOutCont=res.data.data
                 _this.instanceLayerDataOut=[initOutputList] 
