@@ -635,7 +635,38 @@ const websocket=function(it){
                             }
                         })
                     }
-               }                
+               }else if(re.msg == 'queryList') {
+                   _this.$axios.post('/api/simple/queryList', re.query).then(res => {
+                       if(res.data.code == 0) {
+                        _this.$message({
+                            message:'收到可用服务请求',
+                            type:'success',
+                            showClose:true
+                        })
+                        let data={
+                            msg:'queryList',
+                            list:res.data
+                        }
+                        ws.send(data)
+                       }
+                   })
+               }else if(res.msg == 'queryCollection') {
+                   console.log('query collection')
+                    _this.$axios.post('/api/simple/queryCollection', re.query).then(res => {
+                        if(res.data.code == 0) {
+                         _this.$message({
+                             message:'收到可用服务请求',
+                             type:'success',
+                             showClose:true
+                         })
+                         let data={
+                             msg: 'queryCollection',
+                             data: res.data
+                         }
+                         ws.send(data)
+                        }
+                    })
+               }     
             }
 
         }else{
