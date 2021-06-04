@@ -68,8 +68,7 @@ const websocket=function(it){
 
             }
            
-             ws.onmessage = function(e){
-               
+            ws.onmessage = function(e){               
                 //中转服务器发来success，证明建立websocket通信成功
                if(e.data==='success'){
                     console.log("连接中转服务器成功");
@@ -87,7 +86,13 @@ const websocket=function(it){
           
 
                
-               let re=JSON.parse(e.data)
+            //    let re=JSON.parse(e.data)
+               let re 
+               if(typeof e.data == 'string') {
+                   re = JSON.parse(e.data)
+               } else {
+                   re = e.data
+               }
                
                if(re.msg&&re.msg=="beat"){
                     
@@ -635,7 +640,52 @@ const websocket=function(it){
                             }
                         })
                     }
-               }                
+               }else if(re.msg == 'queryList') {
+                   console.log('query list')
+                   _this.$axios.post('/api/simple/queryList', re.query, {timeout: 600000}).then(res => {
+                       if(res.data.code == 0) {
+                        _this.$message({
+                            message:'收到可用服务请求',
+                            type:'success',
+                            showClose:true
+                        })
+                        let message={
+                            msg:'queryList',
+                            data:res.data,
+                            total: res.total,
+                        }
+                        ws.send(JSON.stringify(message))
+                       } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                    }
+                   })
+               }else if(re.msg == 'queryCollection') {
+                   console.log('query collection')
+                    _this.$axios.post('/api/simple/queryCollection', re.query, {timeout: 600000}).then(res => {
+                        if(res.data.code == 0) {
+                         _this.$message({
+                             message:'收到可用服务请求',
+                             type:'success',
+                             showClose:true
+                         })
+                         let message = {
+                             msg: 'queryCollection',
+                             data: res.data
+                         }
+                         ws.send(JSON.stringify(message))
+                        } else {
+                            _this.$message({
+                                message:'收到可用服务请求失败',
+                                type:'fail',
+                                showClose:true
+                            })
+                        }
+                    })
+               }     
             }
 
         }else{
@@ -649,13 +699,6 @@ const websocket=function(it){
             
         }
            
-
-
-
-
-
-
-
       }else{
         _this.$message({
           message:'service offline',

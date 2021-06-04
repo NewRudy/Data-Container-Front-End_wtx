@@ -973,6 +973,7 @@ export default {
                     userToken:_this.instancesCont.userToken,
                     type:_this.instancesCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.instancesCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -997,6 +998,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -1017,6 +1019,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -1039,6 +1042,7 @@ export default {
                     userToken:_this.instancesCont.userToken,
                     type:_this.instancesCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.instancesCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1057,6 +1061,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1074,6 +1079,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1084,6 +1090,7 @@ export default {
             let info={
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                workSpace:this.$store.state.currentWorkSpace.uid,
                 type:this.$route.query.type,
                 parentLevel:_this.instancesCont.parentLevel,
                 subContConnect:{
@@ -1112,7 +1119,8 @@ export default {
                         type: _this.instancesCont.type,
                         uid:_this.instancesCont.uid,
                         parentLevel:_this.instancesCont.parentLevel,
-                        userToken:_this.instancesCont.userToken
+                        userToken:_this.instancesCont.userToken,
+                        workSpace:this.$store.state.currentWorkSpace.uid,
                     })
                     _this.nowGetDataListData = Folder
                 }
@@ -1126,6 +1134,7 @@ export default {
                 pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                workSpace:this.$store.state.currentWorkSpace.uid,
                 type:'Data',
                 parentLevel:_this.chooseMethodInstancesCont.parentLevel,
                 subContConnect:{
@@ -1151,7 +1160,8 @@ export default {
                         type: _this.chooseMethodInstancesCont.type,
                         uid:_this.chooseMethodInstancesCont.uid,
                         parentLevel:_this.chooseMethodInstancesCont.parentLevel,
-                        userToken:_this.chooseMethodInstancesCont.userToken
+                        userToken:_this.chooseMethodInstancesCont.userToken,
+                        workSpace:this.$store.state.currentWorkSpace.uid,
                     })
                     _this.nowGetDataListData = Folder
                 }
@@ -1167,6 +1177,7 @@ export default {
                 pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                 workSpace:this.$store.state.currentWorkSpace.uid,
                 type:'DataOut',
                 parentLevel:_this.dataOutCont.parentLevel,
                 subContConnect:{
@@ -1192,7 +1203,8 @@ export default {
                         type: _this.dataOutCont.type,
                         uid:_this.dataOutCont.uid,
                         parentLevel:_this.dataOutCont.parentLevel,
-                        userToken:_this.dataOutCont.userToken
+                        userToken:_this.dataOutCont.userToken,
+                         workSpace:this.$store.state.currentWorkSpace.uid,
                     })
 
                     _this.nowGetDataListData = Folder
@@ -1273,7 +1285,11 @@ export default {
 
         },
         addFolderAjax(newInstance){
-            let _this=this
+            if(!newInstance.parentLevel) {
+                newInstance.parentLevel = this.instancesCont.parentLevel
+            }
+            console.log('newInstance: ', newInstance)
+            let _this=this 
             _this.$axios.put('/api/newInst',newInstance)
             .then((res)=>{
 
@@ -1474,6 +1490,7 @@ export default {
                 uid:0,
                 parentLevel:'-1',
                 userToken:localStorage.getItem('Authorization'),
+                 workSpace:this.$store.state.currentWorkSpace.uid,
                 currentPage: _this.currentPage,
                 pageSize: _this.pageSize,
             }
@@ -1552,7 +1569,8 @@ export default {
                 uid:_this.instancesCont.uid,
                 id:it.id,
                 type:it.type,
-                instType:_this.$route.query.type
+                instType:_this.$route.query.type,
+                workSpace:this.$store.state.currentWorkSpace.uid,
             }
             if(it.type!="Processing"){
 
@@ -1763,6 +1781,7 @@ export default {
             uid:'0',
             parentLevel:'-1',
             userToken:localStorage.getItem('Authorization'),
+             workSpace:this.$store.state.currentWorkSpace.uid,
             currentPage: _this.currentPage,
             pageSize: _this.pageSize,
         }
@@ -1791,6 +1810,7 @@ export default {
             uid:'0',
             parentLevel:'-1',
             userToken:localStorage.getItem('Authorization'),
+             workSpace:this.$store.state.currentWorkSpace.uid,
             currentPage: _this.currentPage,
             pageSize: _this.pageSize,
         }

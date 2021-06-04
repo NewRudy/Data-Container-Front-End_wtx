@@ -1526,7 +1526,8 @@ export default {
                 uid:_this.instancesCont.uid,
                 id:it.id,
                 type:it.type,
-                instType:_this.$route.query.type
+                instType:_this.$route.query.type,
+                workSpace:this.$store.state.currentWorkSpace.uid,
             }
             if(it.type!="Processing"){
 

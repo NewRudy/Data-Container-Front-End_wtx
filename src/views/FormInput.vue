@@ -603,6 +603,13 @@ import Content from '@/views/Content';
                 inactive-text="separation">
               </el-switch>
           </el-form-item>
+          <el-form-item label="copyOrNot:">
+              <el-switch
+                v-model="simpleForm.isCopy"
+                active-text="noCopy"
+                inactive-text="copy">
+              </el-switch>
+          </el-form-item>
           <el-form-item label="Authority:">
               <el-switch
                 v-model="simpleForm.authority"
@@ -635,6 +642,7 @@ export default {
         path: '',
         xmlFolder: '',
         isMerge: true,
+        isCopy: true,
         authority: true,
       },
       options: [{
@@ -826,6 +834,8 @@ export default {
         uid:_this.$route.query.instance_uid ? _this.$route.query.instance_uid : '0',
         instype:_this.$route.query.type,
         userToken:_this.$route.query.userToken,
+        workSpace:this.$store.state.currentWorkSpace.uid,
+        workspaceName:this.$store.state.currentWorkSpace.name,
         //关联用户信息
         oid:localStorage.getItem('relatedUsr'),
       })
@@ -908,6 +918,7 @@ export default {
         uid:_this.$route.query.instance_uid,
         instype:_this.$route.query.type,
         userToken:_this.$route.query.userToken,
+         workSpace:this.$store.state.currentWorkSpace.uid,
         //关联用户信息
         oid:localStorage.getItem('relatedUsr'),
        //文件信息
@@ -1062,6 +1073,7 @@ export default {
         'uid':_this.$route.query.instance_uid,
         'instype':_this.$route.query.type,
         'userToken':_this.$route.query.userToken,
+         'workSpace':this.$store.state.currentWorkSpace.uid,
         //关联用户信息
         'oid':localStorage.getItem('relatedUsr').split(',')[0],
         // 数据模板信息
@@ -1157,7 +1169,8 @@ export default {
             type: 'Data',
             uid:'0',
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization')
+            userToken:localStorage.getItem('Authorization'),
+             workSpace:this.$store.state.currentWorkSpace.uid,
         }
         //获取初始列表，最上层列表
         this.$axios.get('/api/instances',{
@@ -1202,6 +1215,7 @@ export default {
           let info={
               uid:Folder.subContentId,
               userToken:localStorage.getItem('Authorization'),
+              workSpace:this.$store.state.currentWorkSpace.uid,
               type:'Data',
               parentLevel:_this.instancesCont.parentLevel,
               subContConnect:{
@@ -1226,7 +1240,8 @@ export default {
                       type: _this.instancesCont.type,
                       uid:_this.instancesCont.uid,
                       parentLevel:_this.instancesCont.parentLevel,
-                      userToken:_this.instancesCont.userToken
+                      userToken:_this.instancesCont.userToken,
+                       workSpace:this.$store.state.currentWorkSpace.uid,
                   })
                   
               }
