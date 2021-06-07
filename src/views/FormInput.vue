@@ -606,8 +606,8 @@ import Content from '@/views/Content';
           <el-form-item label="copyOrNot:">
               <el-switch
                 v-model="simpleForm.isCopy"
-                active-text="noCopy"
-                inactive-text="copy">
+                active-text="copy"
+                inactive-text="noCopy">
               </el-switch>
           </el-form-item>
           <el-form-item label="Authority:">
@@ -818,6 +818,7 @@ export default {
         date: utils.formatDate(new Date()),
         type: 'file',
         isMerge: _this.simpleForm.isMerge,
+        isCopy: _this.simpleForm.isCopy,
         authority: _this.simpleForm.authority,
         path: _this.simpleForm.path,
         keywords:_this.form.dynamicTags,

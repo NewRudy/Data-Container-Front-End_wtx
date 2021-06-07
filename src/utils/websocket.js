@@ -37,7 +37,7 @@ const websocket=function(it){
                 let msg= JSON.stringify(cont)
                  
                 ws.send(msg);
-                console.log('open')
+                console.log('open: ', msg)
                 if(ws.readyState==1){
 
                     heartBeat=setInterval(()=>{
