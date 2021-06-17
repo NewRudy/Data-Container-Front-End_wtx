@@ -531,9 +531,8 @@
 
 
                     </el-row>
-
                       <el-pagination
-                        style="margin-top: 20px; float: right"
+                        style='margin-top: 25px; float: right'
                         @size-change="handleSizeChange"
                         @current-change="handleCurrentChange"
                         :current-page="currentPage"
@@ -543,7 +542,7 @@
                         layout="total, sizes, prev, pager, next, jumper"
                         :total="total">
                       </el-pagination>
-                    </div>
+                 </div>
             
         
     </el-row>
@@ -575,14 +574,9 @@ export default {
     data: () => ({
         currentPage: 1,
         pageSize: 10,
-        total: 15,
-        params: {
-            uid: '',
-            userToken: '',
-            type: 'Data',
-            parentLevel: _this.chooseMethodInstancesCont.parentLevel,
-            
-        },
+        total: 0,
+        nowGetDataListFunc: '',     // 记录现在返回的函数，为了重新分页
+        nowGetDataListData: '',
 
         //select workspace massagebox visiable attribute
        selectWorkspaceList: false,
@@ -685,6 +679,12 @@ export default {
 
         inputConfigValue:{},//有顺序的路径
         inputConfigParams:[],//参数
+
+
+
+
+
+        
         
     }),
     created(){
@@ -716,9 +716,7 @@ export default {
             type: _this.instnaceType,
             uid:_this.listUid,
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization'),
-            currentPage: 1,
-            pageSize: 10,
+            userToken:localStorage.getItem('Authorization')
         }
         //获取初始列表，最上层列表
 
@@ -726,6 +724,7 @@ export default {
             initList['workSpace']=this.$store.state.currentWorkSpace.uid
         }
 
+        this.nowGetDataListData = initList
         this.$axios.get('/api/instances',{
             params:initList
         })
@@ -744,10 +743,8 @@ export default {
                 
                 
                 _this.instancesCont=res.data.data
-                _this.originList=res.data.data.list
+
                 _this.instanceLayer=[initList] 
-                _this.currentPage = 1
-                _this.pageSize = 10
                 _this.total = res.data.total
             }
             
@@ -774,22 +771,41 @@ export default {
         
     },
     methods:{
+        getDataList() {
+            this.nowGetDataListData.currentPage = this.currentPage
+            this.nowGetDataListData.pageSize = this.pageSize
+            let _this = this 
+            this.$axios.get('/api/instances',{
+            params:this.nowGetDataListData
+        })
+        .then((res)=>{
+            if(res.data.code===-1){
+                  _this.$message({
+                        message: 'instances request failed ',
+                        type: 'fail'
+                    });
+            }else if(res.data.code===-2){
+                 _this.$message({
+                        message: 'please logout,then login again',
+                        type: 'fail'
+                    });
+            }else{
+                _this.instancesCont=res.data.data
+                _this.instanceLayer=[this.nowGetDataListData] 
+                _this.total = res.data.total
+            }
+            
+        })
+        },
         // 分页的函数
         handleSizeChange(val) {
-          console.log(`每页 ${val} 条`);
+          this.pageSize = val
+          this.nowGetDataListFunc(this.nowGetDataListData)
+          this.instanceLayer.pop()
         },
         handleCurrentChange(val) {
-          console.log(`当前页: ${val}`);
-        },
-        changeParams() {
-
-        },
-        // 获取数据都用这个函数了，其它的函数的重复性很高的
-        getDataLiat() {
-            let _this = this 
-            let info = {
-
-            }
+          this.currentPage = val
+          this.nowGetDataListFunc(this.nowGetDataListData)
         },
 
 
@@ -955,6 +971,7 @@ export default {
                     userToken:_this.instancesCont.userToken,
                     type:_this.instancesCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.instancesCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -979,6 +996,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -999,6 +1017,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]//只使用新建项
                 }
                 this.addFolderAjax(newInst)
@@ -1021,6 +1040,7 @@ export default {
                     userToken:_this.instancesCont.userToken,
                     type:_this.instancesCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.instancesCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1039,6 +1059,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1056,6 +1077,7 @@ export default {
                     userToken:_this.dataOutCont.userToken,
                     type:_this.dataOutCont.type,
                     parentLevel:_this.parentLevel,
+                    workSpace:this.$store.state.currentWorkSpace.uid,
                     data:_this.dataOutCont.list[0]
                 }
             this.addFolderAjax(newInst)
@@ -1066,6 +1088,7 @@ export default {
             let info={
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                workSpace:this.$store.state.currentWorkSpace.uid,
                 type:this.$route.query.type,
                 parentLevel:_this.instancesCont.parentLevel,
                 subContConnect:{
@@ -1073,7 +1096,7 @@ export default {
                     id:Folder.id
                 },//关联文件下的子instances
                 currentPage: _this.currentPage,
-                pageSize: _this.pageSize
+                pageSize: _this.pageSize,
             }
 
             this.$axios.get('/api/instances',{
@@ -1086,15 +1109,19 @@ export default {
                         });
                 }else{
                     _this.instancesCont=res.data.data
+
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayer.push(Folder.name)
                     _this.instanceLayer.push({
                         type: _this.instancesCont.type,
                         uid:_this.instancesCont.uid,
                         parentLevel:_this.instancesCont.parentLevel,
-                        userToken:_this.instancesCont.userToken
+                        userToken:_this.instancesCont.userToken,
+                        workSpace:this.$store.state.currentWorkSpace.uid,
                     })
-                    _this.total = res.data.total    
+                    _this.nowGetDataListData = Folder
+                    _this.nowGetDataListFunc = _this.intoFolder
                 }
             });
             
@@ -1102,16 +1129,17 @@ export default {
         intoMethodDataFolder(Folder){
             let _this=this
             let info={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                workSpace:this.$store.state.currentWorkSpace.uid,
                 type:'Data',
                 parentLevel:_this.chooseMethodInstancesCont.parentLevel,
                 subContConnect:{
                     uid:_this.chooseMethodInstancesCont.uid,
                     id:Folder.id
-                },//关联文件下的子instances
-                currentPage: _this.currentPage,
-                pageSize: _this.pageSize
+                }//关联文件下的子instances
             }
 
             this.$axios.get('/api/instances',{
@@ -1124,15 +1152,18 @@ export default {
                         });
                 }else{
                     _this.chooseMethodInstancesCont=res.data.data
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayerMethodDataChooseData.push(Folder.name)
                     _this.instanceLayerMethodChooseData.push({
                         type: _this.chooseMethodInstancesCont.type,
                         uid:_this.chooseMethodInstancesCont.uid,
                         parentLevel:_this.chooseMethodInstancesCont.parentLevel,
-                        userToken:_this.chooseMethodInstancesCont.userToken
+                        userToken:_this.chooseMethodInstancesCont.userToken,
+                        workSpace:this.$store.state.currentWorkSpace.uid,
                     })
-                    _this.total = res.data.total
+                    _this.nowGetDataListData = Folder
+                    _this.nowGetDataListFunc = _this.intoMethodDataFolder
                 }
             });
             
@@ -1142,16 +1173,17 @@ export default {
 
             let _this=this
             let info={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 uid:Folder.subContentId,
                 userToken:localStorage.getItem('Authorization'),
+                 workSpace:this.$store.state.currentWorkSpace.uid,
                 type:'DataOut',
                 parentLevel:_this.dataOutCont.parentLevel,
                 subContConnect:{
                     uid:_this.dataOutCont.uid,
                     id:Folder.id
-                },//关联文件下的子instances
-                currentPage: _this.currentPage,
-                pageSize: _this.pageSize
+                }//关联文件下的子instances
             }
 
             this.$axios.get('/api/instances',{
@@ -1164,15 +1196,18 @@ export default {
                         });
                 }else{
                     _this.dataOutCont=res.data.data
+                    _this.total = res.data.total
                     //面包屑层次
                     _this.folderLayerDataOut.push(Folder.name)
                     _this.instanceLayerDataOut.push({
                         type: _this.dataOutCont.type,
                         uid:_this.dataOutCont.uid,
                         parentLevel:_this.dataOutCont.parentLevel,
-                        userToken:_this.dataOutCont.userToken
+                        userToken:_this.dataOutCont.userToken,
+                         workSpace:this.$store.state.currentWorkSpace.uid,
                     })
-                    _this.total = res.data.total
+                    _this.nowGetDataListData = Folder
+                    _this.nowGetDataListFunc = _this.intoDataOutFolder
                 }
             });
         },
@@ -1196,8 +1231,7 @@ export default {
                         });
                 }else{
                     _this.instancesCont=res.data.data
-                   
-                    
+                   _this.total = res.data.total
                 }
             })
 
@@ -1220,7 +1254,7 @@ export default {
                         });
                 }else{
                     _this.chooseMethodInstancesCont=res.data.data
-                   
+                   _this.total = res.data.total
                     
                 }
             })
@@ -1244,14 +1278,18 @@ export default {
                         });
                 }else{
                     _this.dataOutCont=res.data.data
-                    
+                    _this.total = res.data.total
                 }
             })
 
 
         },
         addFolderAjax(newInstance){
-            let _this=this
+            if(!newInstance.parentLevel) {
+                newInstance.parentLevel = this.instancesCont.parentLevel
+            }
+            console.log('newInstance: ', newInstance)
+            let _this=this 
             _this.$axios.put('/api/newInst',newInstance)
             .then((res)=>{
 
@@ -1446,12 +1484,15 @@ export default {
            
             let _this=this
             let initList={
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
                 type: _this.$route.query.type,
                 uid:0,
                 parentLevel:'-1',
                 userToken:localStorage.getItem('Authorization'),
-                currentPage: currentPage,
-                pageSize: pageSize,
+                 workSpace:this.$store.state.currentWorkSpace.uid,
+                currentPage: _this.currentPage,
+                pageSize: _this.pageSize,
             }
             if(this.$store.state.currentWorkSpace!=undefined&&initList.parentLevel=='-1'){
             initList['workSpace']=this.$store.state.currentWorkSpace.uid
@@ -1468,9 +1509,11 @@ export default {
                             type: 'fail'
                         });
                 }else{
+                     
                     _this.instancesCont=res.data.data
-                    _this.originList=res.data.list
+
                     _this.total = res.data.total
+
                 }
                 
             })
@@ -1737,7 +1780,10 @@ export default {
             type: 'Data',
             uid:'0',
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization')
+            userToken:localStorage.getItem('Authorization'),
+             workSpace:this.$store.state.currentWorkSpace.uid,
+            currentPage: _this.currentPage,
+            pageSize: _this.pageSize,
         }
         
        
@@ -1753,7 +1799,7 @@ export default {
                         type: 'fail'
                     });
             }else{
-           
+                _this.total = res.data.total
                 _this.methodInputLoading=false
                 _this.chooseMethodInstancesCont=res.data.data
                 _this.instanceLayerMethodChooseData=[initInputList] 
@@ -1763,7 +1809,10 @@ export default {
             type: 'DataOut',
             uid:'0',
             parentLevel:'-1',
-            userToken:localStorage.getItem('Authorization')
+            userToken:localStorage.getItem('Authorization'),
+             workSpace:this.$store.state.currentWorkSpace.uid,
+            currentPage: _this.currentPage,
+            pageSize: _this.pageSize,
         }
         // 输出
         this.$axios.get('/api/instances',{
@@ -1776,7 +1825,7 @@ export default {
                         type: 'fail'
                     });
             }else{
-            
+                _this.total = res.data.total
                 _this.methodOutputLoading=false
                 _this.dataOutCont=res.data.data
                 _this.instanceLayerDataOut=[initOutputList] 

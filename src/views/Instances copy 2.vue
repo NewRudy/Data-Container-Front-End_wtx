@@ -680,6 +680,12 @@ export default {
         inputConfigValue:{},//有顺序的路径
         inputConfigParams:[],//参数
 
+
+
+
+
+        
+        
     }),
     created(){
 
@@ -702,7 +708,7 @@ export default {
         console.log('mounted')
         this.instnaceType=this.$route.query.type
         this.initGetDataList()
-        this.getDataList('All Files')
+        this.getDataList('All Files', 'instancesCont', this.instanceLayer, this.folderLayer)
     },
     computed:{
         connectPortalUsr(){
@@ -736,44 +742,33 @@ export default {
             // this.nowGetDataListData.workSpace = this.$store.state.currentWorkSpace.uid ? this.$store.state.currentWorkSpace.uid : ''
         },
 
-        getDataList(folderName) {
-            console.log('getDataList.')
+        getDataList(folderName, data, layerData, layerName) {
             let _this = this 
             this.$axios.get('/api/instances',{
             params:this.nowGetDataListData
             }).then((res)=>{
-                if(res.data.data.code===-1){
+                console.log('getDataLiat res: ', res)
+                if(res.data.code===-1){
                       _this.$message({
                             message: 'instances request failed ',
                             type: 'fail'
                         });
-                }else if(res.data.data.code===-2){
+                }else if(res.data.code===-2){
                      _this.$message({
                             message: 'please logout,then login again',
                             type: 'fail'
                         });
-                }else{   
-                    _this.total = res.data.total
-                    let dataTemp = {}
-                    Object.keys(_this.nowGetDataListData).map(item => dataTemp[item] = _this.nowGetDataListData[item])
-                    if(_this.instnaceType == 'Data') {
+                }else{         
+                    if(data === 'instanceCont') {
                         _this.instancesCont = res.data.data
-                        if(folderName) {
-                            _this.instanceLayer.push(dataTemp)
-                            _this.folderLayer.push(folderName)
-                        }
-                    } else if(_this.instnaceType == 'DataOut') {
-                        _this.dataOutCont = res.data.data
-                        if(folderName) {
-                            _this.instanceLayerDataOut.push(dataTemp)
-                            _this.folderLayerDataOut.push(folderName)
-                        }
-                    } else {    // 这里应该还有四种，先留着了
+                    } else if(data === 'chooseMethod') {
                         _this.chooseMethodInstancesCont = res.data.data
-                        _this.instanceLayerMethodChooseData.push(dataTemp)
+                    } else if(data === 'dataoutCont') {
+                        _this.dataOutCont = res.data.data
                     }
-                    console.log('foderLayer: ', _this.folderLayer)
-                    console.log('instanceLayer: ', _this.instanceLayer)
+                    layerData.push(this.nowGetDataListData)
+                    _this.total = res.data.total
+                    layerName.push(folderName)
                 }
             })
         },
@@ -1068,43 +1063,42 @@ export default {
             this.nowGetDataListData.uid = Folder.subContentId
             this.nowGetDataListData.parentLevel = this.instancesCont.parentLevel
             this.nowGetDataListData.currentPage = 1
-            this.getDataList(Folder.name)
+            this.getDataList(Folder.name, 'instanceCont', this.instanceLayer, this.folderLayer)
         },
         intoMethodDataFolder(Folder){
             this.nowGetDataListData.uid = Folder.subContentId
             this.nowGetDataListData.parentLevel = _this.chooseMethodInstancesCont.parentLevel
             this.nowGetDataListData.currentPage = 1
-            this.getDataList(Folder.name)
+            this.getDataList(Folder.name, 'chooseMethod', this.instanceLayerMethodChooseData, this.folderLayerMethodDataChooseData)
         },
         intoDataOutFolder(Folder){
             this.nowGetDataListData.uid = Folder.subContentId
             this.nowGetDataListData.parentLevel = this.dataOutCont.parentLevel
             this.nowGetDataListData.currentPage = 1
-            this.getDataList(Folder.name)
+            this.getDataList(Folder.name, 'dataoutCont', this.instanceLayerDataOut, this.folderLayerDataOut)
         },
 
 
         backUpperFolder(){
             //面包屑层次
-            this.folderLayer.pop()
             let name = this.folderLayer.pop()
             this.instanceLayer.pop()
-            this.nowGetDataListData = this.instanceLayer.pop()
-            this.getDataList(name)
+            this.nowGetDataListData = this.instanceLayer[this.instanceLayer.length-1]
+            this.getDataList(name, 'instanceCont', this.instanceLayer, this.folderLayer)
         }, 
         backUpperMethodDataFolder(){
             //面包屑层次
-            this.folderLayerMethodDataChooseData.pop()
+            let name = this.folderLayerMethodDataChooseData.pop()
             this.instanceLayerMethodChooseData.pop()
             this.nowGetDataListData = this.instanceLayerMethodChooseData[this.instanceLayerMethodChooseData.length-1]
-            this.getDataList()
+            this.getDataList(name, 'chooseMethod', this.instanceLayerMethodChooseData, this.folderLayerMethodDataChooseData)
         },
         backUpperDataOutFolder(){
                 //面包屑层次
-            this.folderLayerDataOut.pop()
+            let name = this.folderLayerDataOut.pop()
             this.instanceLayerDataOut.pop()
             this.nowGetDataListData = this.instanceLayerDataOut[this.instanceLayerDataOut.length-1]
-            this.getDataList()
+            this.getDataList(name, 'dataoutCont', this.instanceLayerDataOut, this.folderLayerDataOut)
         },
         addFolderAjax(newInstance){
             if(!newInstance.parentLevel) {
