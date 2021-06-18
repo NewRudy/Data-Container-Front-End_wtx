@@ -575,7 +575,7 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0,
-        nowGetDataListFunc: '',     // 记录现在返回的函数，为了重新分页
+        // nowGetDataListFunc: '',     // 记录现在返回的函数，为了重新分页
         nowGetDataListData: {},
 
         //select workspace massagebox visiable attribute
@@ -649,7 +649,7 @@ export default {
         chooseMethodData:undefined,
         chooseMethodInstancesCont:{},
         instanceLayerMethodChooseData:[],
-        folderLayerMethodDataChooseData:['All File'],
+        folderLayerMethodDataChooseData:[],
 
         // loading
 
@@ -664,7 +664,7 @@ export default {
 
         dataOutCont:{},
         instanceLayerDataOut:[],
-        folderLayerDataOut:['All File'],
+        folderLayerDataOut:[],
         operateDataOutFloder:false,
         methodResultName:'',
         chooseOutDataFile:undefined,
@@ -702,7 +702,7 @@ export default {
         console.log('mounted')
         this.instnaceType=this.$route.query.type
         this.initGetDataList()
-        this.getDataList('All Files')
+        this.getDataList('All File')
     },
     computed:{
         connectPortalUsr(){
@@ -737,7 +737,7 @@ export default {
         },
 
         getDataList(folderName) {
-            console.log('getDataList.')
+            console.log('getDataList:', this.nowGetDataListData)
             let _this = this 
             this.$axios.get('/api/instances',{
             params:this.nowGetDataListData
@@ -756,22 +756,22 @@ export default {
                     _this.total = res.data.total
                     let dataTemp = {}
                     Object.keys(_this.nowGetDataListData).map(item => dataTemp[item] = _this.nowGetDataListData[item])
-                    if(_this.instnaceType == 'Data') {
+                    // if(_this.instnaceType == 'Data') {
                         _this.instancesCont = res.data.data
                         if(folderName) {
                             _this.instanceLayer.push(dataTemp)
                             _this.folderLayer.push(folderName)
                         }
-                    } else if(_this.instnaceType == 'DataOut') {
-                        _this.dataOutCont = res.data.data
-                        if(folderName) {
-                            _this.instanceLayerDataOut.push(dataTemp)
-                            _this.folderLayerDataOut.push(folderName)
-                        }
-                    } else {    // 这里应该还有四种，先留着了
-                        _this.chooseMethodInstancesCont = res.data.data
-                        _this.instanceLayerMethodChooseData.push(dataTemp)
-                    }
+                    // } else if(_this.instnaceType == 'DataOut') {
+                    //     _this.dataOutCont = res.data.data
+                    //     if(folderName) {
+                    //         _this.instanceLayerDataOut.push(dataTemp)
+                    //         _this.folderLayerDataOut.push(folderName)
+                    //     }
+                    // } else {    // 这里应该还有四种，先留着了
+                    //     _this.chooseMethodInstancesCont = res.data.data
+                    //     _this.instanceLayerMethodChooseData.push(dataTemp)
+                    // }
                     console.log('foderLayer: ', _this.folderLayer)
                     console.log('instanceLayer: ', _this.instanceLayer)
                 }
@@ -1303,8 +1303,21 @@ export default {
         },
         //监听路由变化
         watchrouter(){
-             this.initGetDataList()
-             this.getDataList()
+            if(this.$route.query.type) {
+                this.instnaceType = this.$route.query.type
+            }
+            // if(this.instnaceType === 'Data') {
+                this.instanceLayer = []
+                this.folderLayer = []
+            // } else if(this.instnaceType === 'DataOut') {
+            //     this.instanceLayerDataOut = []
+            //     this.folderLayerDataOut = []
+            // } else {    // 还有四种，先将就了
+            //     this.chooseMethodInstancesCont = []
+            //     this.instanceLayerMethodChooseData = []
+            // }
+            this.initGetDataList()
+            this.getDataList('All File')
         },
         authoritySwitch(it){
             console.log(it.authority,'authority')
