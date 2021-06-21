@@ -97,7 +97,7 @@ import async from 'async'
                     form.append("index", i + 1);   //当前片数'
 
                 
-                    await _this.$axios.post('http://111.229.14.128:8899/large',form,{
+                    await _this.$axios.post('http://111.229.14.128:8895/large',form,{
                         timeout: 120*1000
                     })
                     .then(res=>{
@@ -118,7 +118,7 @@ import async from 'async'
                                 _this.$notify({
                                     title: 'Download: '+file.name,
                                     dangerouslyUseHTMLString: true,
-                                    message: '<a href='+'http://111.229.14.128:8899/data?uid='+res.data.data.source_store_id+'>'+file.name+'</a>',
+                                    message: '<a href='+'http://111.229.14.128:8895/data?uid='+res.data.data.source_store_id+'>'+file.name+'</a>',
                                     duration: 0
                                 });
 

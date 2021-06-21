@@ -1517,17 +1517,17 @@ export default {
                     if(res.data.html){
                          
                         // window.open('/api/visualResultHtml?path='+encodeURIComponent(res.data.html))
-                        window.open('http://111.229.14.128:8899/data?uid=' +res.data.uid,"VisualResultResultHtml",'width=700,height=600,resizable=yes,scrollbars=yes')
+                        window.open('http://111.229.14.128:8895/data?uid=' +res.data.uid,"VisualResultResultHtml",'width=700,height=600,resizable=yes,scrollbars=yes')
                         
                     }else{
-                        this.$alert('<img src='+'http://111.229.14.128:8899/data?uid=' +res.data.uid+' width="100%" height="100%" alt="Visualization Result" />', 'Visualization Result', {
+                        this.$alert('<img src='+'http://111.229.14.128:8895/data?uid=' +res.data.uid+' width="100%" height="100%" alt="Visualization Result" />', 'Visualization Result', {
                         dangerouslyUseHTMLString: true,
                         confirmButtonText: 'ok',
                         });
                     }
 
                 }else{
-                     window.location.href='http://111.229.14.128:8899/data?uid=' +res.data.uid
+                     window.location.href='http://111.229.14.128:8895/data?uid=' +res.data.uid
 
                 }
             }else{

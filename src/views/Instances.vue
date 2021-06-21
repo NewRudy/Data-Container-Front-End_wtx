@@ -733,7 +733,7 @@ export default {
             this.nowGetDataListData.userToken = localStorage.getItem('Authorization')
             this.nowGetDataListData.currentPage = this.currentPage ? this.currentPage: 1
             this.nowGetDataListData.pageSize = this.pageSize ? this.pageSize: 10
-            // this.nowGetDataListData.workSpace = this.$store.state.currentWorkSpace.uid ? this.$store.state.currentWorkSpace.uid : ''
+            this.nowGetDataListData.workSpace = this.$store.state.currentWorkSpace.uid ? this.$store.state.currentWorkSpace.uid : ''
         },
 
         getDataList(folderName) {
@@ -742,12 +742,12 @@ export default {
             this.$axios.get('/api/instances',{
             params:this.nowGetDataListData
             }).then((res)=>{
-                if(res.data.data.code===-1){
+                if(res.data.code===-1){
                       _this.$message({
                             message: 'instances request failed ',
                             type: 'fail'
                         });
-                }else if(res.data.data.code===-2){
+                }else if(res.data.code===-2){
                      _this.$message({
                             message: 'please logout,then login again',
                             type: 'fail'
@@ -1536,17 +1536,17 @@ export default {
                     if(res.data.html){
                          
                         // window.open('/api/visualResultHtml?path='+encodeURIComponent(res.data.html))
-                        window.open('http://111.229.14.128:8899/data?uid=' +res.data.uid,"VisualResultResultHtml",'width=700,height=600,resizable=yes,scrollbars=yes')
+                        window.open('http://111.229.14.128:8895/data?uid=' +res.data.uid,"VisualResultResultHtml",'width=700,height=600,resizable=yes,scrollbars=yes')
                         
                     }else{
-                        this.$alert('<img src='+'http://111.229.14.128:8899/data?uid=' +res.data.uid+' width="100%" height="100%" alt="Visualization Result" />', 'Visualization Result', {
+                        this.$alert('<img src='+'http://111.229.14.128:8895/data?uid=' +res.data.uid+' width="100%" height="100%" alt="Visualization Result" />', 'Visualization Result', {
                         dangerouslyUseHTMLString: true,
                         confirmButtonText: 'ok',
                         });
                     }
 
                 }else{
-                     window.location.href='http://111.229.14.128:8899/data?uid=' +res.data.uid
+                     window.location.href='http://111.229.14.128:8895/data?uid=' +res.data.uid
 
                 }
             }else{

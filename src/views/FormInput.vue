@@ -1328,7 +1328,7 @@ export default {
 
           },
           downProgramTemplate(){
-                     window.location.href='http://111.229.14.128:8899/data?uid=f394eb7c-bea9-462d-9b61-4cf8090cc893' 
+                     window.location.href='http://111.229.14.128:8895/data?uid=f394eb7c-bea9-462d-9b61-4cf8090cc893' 
 
           }
     ,
