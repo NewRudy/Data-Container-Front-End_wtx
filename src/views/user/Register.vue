@@ -113,12 +113,12 @@
         let _this=this
         this.$refs[formName].validate((valid) => {
           if (valid) {
-             
-             _this.$axios.post('/api/register', 
+             console.log('regForm: ', _this.ruleForm)
+             _this.$axios.post('/api/reg', 
                   _this.ruleForm
               )
              .then((res)=>{
-                 if(res.status===200){
+                 if(res.data.code === 0){
                      _this.$message({
                         message: 'Success! Go to login right now..',
                         type: 'success'
@@ -127,15 +127,22 @@
                         _this.$router.push('/Login')
                     }, 1000);
                     
-                 }else{
-                     _this.$message({
-                        message: 'error!',
+                 }else if (res.data.code === -2) {
+                      _this.$message({
+                        message: '用户名已经被注册',
                         type: 'warning'
                     });
-
-                 }
-
-                
+                } else if (res.data.code === -3) {
+                     _this.$message({
+                        message: res.data.message,
+                        type: 'warning'
+                    });
+                } else {
+                     _this.$message({
+                        message: 'error',
+                        type: 'error'
+                    });
+                }
              })
           } else {
             alert("input error!")

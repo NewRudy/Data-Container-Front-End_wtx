@@ -4539,7 +4539,7 @@ FrameBuffer.DEPTH_STENCIL_ATTACHMENT = __WEBPACK_IMPORTED_MODULE_3__core_glenum_
     ARRAY_BUFFER                   : 0x8892,
     ELEMENT_ARRAY_BUFFER           : 0x8893,
     ARRAY_BUFFER_BINDING           : 0x8894,
-    ELEMENT_ARRAY_BUFFER_BINDING   : 0x8895,
+    ELEMENT_ARRAY_BUFFER_BINDING   : 0x8898,
 
     STREAM_DRAW                    : 0x88E0,
     STATIC_DRAW                    : 0x88E4,

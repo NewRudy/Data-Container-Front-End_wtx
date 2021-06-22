@@ -15,8 +15,8 @@
             </el-form-item>
         
             <el-form-item>
-                <el-button  type="primary" @click="submitForm()">Login</el-button>
-                <!-- <el-button @click="Register" type="success">Register</el-button> -->
+              <el-button @click="Register" type="success">Register</el-button>
+              <el-button  type="primary" @click="submitForm()">Login</el-button>
             </el-form-item>
             </el-form>
              
@@ -36,8 +36,8 @@ import DecryptJS from '../../utils/cycrypto.js';
     data() { 
       return {
         ruleForm: {
-          pwd: '123',
-          name:'admin',
+          pwd: '',
+          name:'',
           loginUser:''
           
         },
@@ -59,7 +59,7 @@ import DecryptJS from '../../utils/cycrypto.js';
          _this.$axios.post('/api/login', 
                   {
                     name:_this.ruleForm.name,
-                    pwd:DecryptJS.Encrypt(enCodePwd)
+                    pwd:enCodePwd
                   }
               )
              .then((res)=>{

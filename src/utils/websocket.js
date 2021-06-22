@@ -20,7 +20,7 @@ const websocket=function(it){
         //连接中转服务器websocket
         let heartBeat
         if(_this.$root.$el.myWS==undefined){
-           var ws = new WebSocket('ws://111.229.14.128:1709');
+           var ws = new WebSocket('ws://111.229.14.128:1708');
            
           _this.$root.$el.myWS=ws
            ws.onopen = function(e){
@@ -390,7 +390,7 @@ const websocket=function(it){
                         type:'success',
                         showClose:true
                     })
-                    window.location.href='http://111.229.14.128:8895/data?uid='+re.dataId
+                    window.location.href='http://111.229.14.128:8898/data?uid='+re.dataId
                 }
 
                }else if(re.msg=="AvbPcs"){

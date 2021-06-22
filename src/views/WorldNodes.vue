@@ -46,7 +46,7 @@ const parser=new xml2js.Parser()
             //   console.log(map)
             let _this=this
             let onlineNodes=[]
-            _this.$axios.get('http://111.229.14.128:8895/onlineNodes')
+            _this.$axios.get('http://111.229.14.128:8898/onlineNodes')
             .then(res=>{
                 let re=parser.parseString(res.data, function (err, result) {
                     if(result.root.serviceNodes[0].onlineServiceNode==undefined) return

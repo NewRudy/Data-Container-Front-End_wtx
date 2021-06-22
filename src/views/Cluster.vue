@@ -33,7 +33,7 @@ const parser= new xml2js.Parser();
     mounted(){
       let _this=this
       this.loading=true
-      this.$axios.get('http://111.229.14.128:8895/onlineNodes',{
+      this.$axios.get('http://111.229.14.128:8898/onlineNodes',{
         headers:{
         "Content-Type":"application/json"
     }
