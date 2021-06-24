@@ -20,8 +20,7 @@ const websocket=function(it){
         //连接中转服务器websocket
         let heartBeat
         if(_this.$root.$el.myWS==undefined){
-           var ws = new WebSocket('ws://111.229.14.128:1708');
-           
+           var ws = new WebSocket('ws://111.229.14.128:1709');
           _this.$root.$el.myWS=ws
            ws.onopen = function(e){
                 
@@ -685,7 +684,29 @@ const websocket=function(it){
                             })
                         }
                     })
-               }     
+               }else if(re.msg === 'findWorkSpace') {
+                   console.log('find workspace')
+                   _this.$axios.post('/api/findWorkSpace', re.query, {timeout: 6000000}).then(res => {
+                    if(res.data.code == 0) {
+                        _this.$message({
+                            message:'收到可用服务请求',
+                            type:'success',
+                            showClose:true
+                        })
+                        let message = {
+                            msg: 'findWorkSpace',
+                            data: res.data
+                        }
+                        ws.send(JSON.stringify(message))
+                       } else {
+                           _this.$message({
+                               message:'收到可用服务请求失败',
+                               type:'fail',
+                               showClose:true
+                           })
+                       }
+                   })
+               }    
             }
 
         }else{

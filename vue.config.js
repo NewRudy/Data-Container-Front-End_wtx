@@ -69,7 +69,7 @@ module.exports = {
             },
 
             '/th':{
-                target:'http://172.21.213.4:1708',
+                target:'http://172.21.213.4:1709',
                 ws:true,
                 timeout:600000,
                 changOrigin:true,
@@ -80,7 +80,7 @@ module.exports = {
             //测试
             //参与式平台
             '/test':{
-                target:'http://172.21.213.4:1708',
+                target:'http://172.21.213.4:1709',
                 ws:true,
                 timeout:600000,
                 changOrigin:true,
