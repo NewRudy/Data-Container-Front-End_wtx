@@ -118,7 +118,7 @@ import async from 'async'
                                 _this.$notify({
                                     title: 'Download: '+file.name,
                                     dangerouslyUseHTMLString: true,
-                                    message: '<a href='+'http://111.229.14.128:8898/data?uid='+res.data.data.source_store_id+'>'+file.name+'</a>',
+                                    message: '<a href='+'http://111.229.14.128:8899/data?uid='+res.data.data.source_store_id+'>'+file.name+'</a>',
                                     duration: 0
                                 });
 

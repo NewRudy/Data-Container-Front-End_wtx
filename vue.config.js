@@ -20,7 +20,7 @@ module.exports = {
                 }
             },
             '/pub':{
-                target:'http://111.229.14.128:8898',
+                target:'http://111.229.14.128:8895',
                 ws:true,
                 timeout:600000,
                 changOrigin:true,
@@ -89,7 +89,7 @@ module.exports = {
                 }
             },
             '/uploadLarge':{
-                target:'http://localhost:8898',
+                target:'http://localhost:8899',
                 ws:true,
                 timeout:600000,
                 changOrigin:true,

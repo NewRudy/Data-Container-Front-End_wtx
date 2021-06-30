@@ -389,7 +389,7 @@ const websocket=function(it){
                         type:'success',
                         showClose:true
                     })
-                    window.location.href='http://111.229.14.128:8898/data?uid='+re.dataId
+                    window.location.href='http://111.229.14.128:8899/data?uid='+re.dataId
                 }
 
                }else if(re.msg=="AvbPcs"){

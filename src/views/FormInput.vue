@@ -565,6 +565,7 @@ import Content from '@/views/Content';
     </el-row>
 
     <el-row :gutter="20" v-if="!instanceModel">
+
       <el-col span="18" offset="2">
         <el-form v-if="this.$route.query.type==='Data'" label-width="200px" :model="simpleForm" style="margin-top: 60px">
           <el-form-item label="Name:">
@@ -623,6 +624,157 @@ import Content from '@/views/Content';
           </el-form-item>
         </el-form>
       </el-col>
+      <el-col span='18' offset="2">
+        <el-form v-if="this.$route.query.type==='Processing'" label-width="200px" :model="simpleForm" style="margin-top: 60px">
+          
+          <!-- 名称 -->
+          <el-form-item  label="Name" prop="name">
+            <el-input v-model="processing.name"  maxlength="25" show-word-limit placeholder="input name.." style="width:220px;"></el-input>
+          </el-form-item>
+
+          <!-- 权限 -->
+          <el-form-item  label="Authority" prop="name">
+            <el-switch
+            v-model="processing.authority"
+            active-text="public"
+            inactive-text="private">
+          </el-switch>
+          </el-form-item>
+
+
+          <!-- 类型选择 暂时去掉 在不同页面去创建-->
+          <!-- <el-form-item  label="Type" prop="name" >
+            <el-radio v-model="processing.processingType" label="Method">Method</el-radio>
+            <el-radio v-model="processing.processingType" label="Instance">Instance</el-radio>
+          </el-form-item> -->
+
+
+
+
+          <!-- describe -->
+          <el-form-item  label="Describe" prop="desc">
+            <el-input type="textarea" rows="3" maxlength="400"   show-word-limit v-model="processing.desc" placeholder="Overview about this..."></el-input>
+          </el-form-item>
+
+
+           <!-- 关联数据 -->
+          <el-form-item label="Data" v-show="!this.$route.query.type.includes('Method')">
+            <el-button type="primary" style="width:200px" @click="selectData">Select </el-button>
+           
+            <!-- </br><span>choose related data</span> -->
+            <el-dialog
+              title="Choose"
+              :visible.sync="selectDialogVisible"
+              width="60%"
+              height="280px"
+               >
+               <el-row style=" height:250px">
+               <el-col :span="10" style=" height:250px;overflow-y:scroll">
+                 <span v-if="chooseDataArray.length==0">choose data</span>
+                 <el-tag
+                  v-for="tag in chooseDataArray"
+                  :key="tag.name"
+                   
+                   >
+                  {{tag.name}}
+                </el-tag>
+               </el-col>
+               <el-col :span="14" style=" height:250px;overflow-y:scroll">
+                <!-- 文件层次深浅进出功能按钮 -->
+                <el-row style="height:30px;margin-left: 20PX;margin-top:10px"> 
+                        <el-button v-if="folderLayer.length===1" size="mini" type="text" disabled>  All file</el-button>
+                      <el-button  v-else size="mini" type="text"  @click="backUpperFolder"  >Upper Folder</el-button>
+                      <el-divider v-if="folderLayer.length>1" direction="vertical"></el-divider>
+                      <span v-if="folderLayer.length>1">&nbsp;{{folderLayer.join(' / ')}}</span>
+                </el-row>
+                  <el-row  v-for="(it,key) in instancesCont.list" :key="key"  class="item" >
+                 
+                    <el-col :span="2" :offset="1">
+                      <img  v-if="it.type==='folder'" src="../assets/folder.png" width="28" height="30" alt="Safari" title="Safari">
+
+                        <img v-if="it.type==='file'" src="../assets/zip.png" width="28" height="30" alt="Safari" title="Safari">
+                    </el-col>
+                    <el-col :span="17" style="height:100%"> 
+                        <a v-if="it.type==='folder'" class="floderName" type="text"  @click="intoFolder(it)"  ref="floderName">
+                            {{it.name}}
+                        </a>
+                        <span class="dataName"  v-if="it.type==='file'">{{it.name}}</span>
+
+                    </el-col>
+                    <el-col v-if="it.type==='file'" :span="3" style="height:100%"> 
+                      <el-button type="primary" @click="chooseData(it)">Add</el-button>
+                    </el-col>
+                  </el-row>
+              </el-col>
+               </el-row>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="selectDialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="connectData">OK</el-button>
+              </span>
+            </el-dialog>
+
+
+            <span v-if="connectedData"></span>
+            <div   class="el-upload__tip">*Specifies the processable data for the creating processing method</div>
+          
+          </el-form-item>
+          <!-- 上传按钮 -->
+          
+          <el-form-item  label="Scripts">
+             
+            <el-button     type="primary" @click="upload_pro" style="width:200px">Choose Scripts</el-button>
+            <div   class="el-upload__tip">*Upload custom processing files based on template 
+              <!-- <el-button type="text" @click="programming_template_visable=true">the programming templates</el-button> -->
+            <el-button type="danger" size="small" icon="el-icon-download" @click="downProgramTemplate" circle></el-button>
+            </div>
+          </el-form-item>
+          <el-dialog
+            title="Programing Template"
+              :visible.sync="programming_template_visable"
+              width="60%"
+              height="280px"
+          >
+            <img src="../assets/programing_template.png" style="width:90%;height:90%">
+              <span slot="footer" class="dialog-footer">         
+                <el-button type="primary" @click="programming_template_visable=false">OK</el-button>
+              </span>
+          </el-dialog>
+           
+          <!-- 创建 -->
+          <el-form-item>
+            <el-button    type="success" @click="showProcessInfoConfirm"  style="width:200px">Create</el-button>
+
+          </el-form-item>
+          <el-dialog
+          title="Confirm:"
+              :visible.sync="createProcessConfirm"
+              width="60%"
+              height="280px"
+          >
+
+          <div><strong>Name: </strong><span style="color:blue"> {{processing.name}}</span></div><br>
+
+          <div><strong>File List: </strong>  
+            <el-tag type="danger" v-for="(it,k) in fileList" :key="k">{{it}}</el-tag>
+             
+           
+ 
+          </div><br>
+
+          <strong>Related Data: </strong> 
+
+            <el-tag v-for="(it,key) in chooseDataArray" :key="key" type="warning" >{{it.name}}</el-tag>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="createProcessConfirm = false">Cancle</el-button>
+                <el-button type="primary" @click="submitUploadProcessing">OK</el-button>
+              </span>
+          </el-dialog>
+         <!-- 数据上传input,不可见 -->
+          <input ref="pro"   id="procesing_up" style="visibility: hidden;" type="file" multiple/>
+         
+        </el-form>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -641,8 +793,8 @@ export default {
         name: '',
         path: '',
         xmlFolder: '',
-        isMerge: true,
-        isCopy: true,
+        isMerge: false,
+        isCopy: false,
         authority: true,
       },
       options: [{
@@ -695,6 +847,12 @@ export default {
         paramsCount:0,
         processingType:'Instance'
       },
+      // simpleProcessing:{
+      //   name: '',
+      //   description: '',
+      //   authority: true,
+
+      // },
       templateDialog:false,
       templateList:[],
       templateTreeData: [{
@@ -799,10 +957,11 @@ export default {
   
   },
   mounted() {
-    
     console.log("init",this.$route.query)
     this.isEdit();
     this.form.uid=localStorage.getItem('relatedUsr').split(',')[1]+uuidv4()
+
+    
   },
   
   methods: {
@@ -855,15 +1014,17 @@ export default {
             if(_this.$route.query.type==='Data'){
                  
                _this.$router.push({path:'/instance',query:{type:'Data'}})
-                _this.$message({
+               _this.$message({
                         message: 'create success ',
                         type: 'success'
                     });
+              
 
             }      
           }
         }
       )
+
     },
 
     chooseCate(cateId){
@@ -1062,13 +1223,13 @@ export default {
         return
       }
 
-      if(_this.choosedTemplate.oid==undefined){
-        this.$message({
-          message:'you have to select a data template',
-          type:'fail'
-        })
-        return
-      }
+      // if(_this.choosedTemplate.oid==undefined){
+      //   this.$message({
+      //     message:'you have to select a data template',
+      //     type:'fail'
+      //   })
+      //   return
+      // }
       let upObj={
         //instance基本信息
         'uid':_this.$route.query.instance_uid,
@@ -1099,6 +1260,8 @@ export default {
       }
       formdata.append('files', document.getElementById('procesing_up').files[0])
       formdata.append('files', document.getElementById('procesing_up').files[1])
+
+      // console.log('formdata:', formdata.getAll())
 
       
       this.$axios.post('/api/newprocess',formdata,{
@@ -1328,7 +1491,7 @@ export default {
 
           },
           downProgramTemplate(){
-                     window.location.href='http://111.229.14.128:8898/data?uid=f394eb7c-bea9-462d-9b61-4cf8090cc893' 
+                     window.location.href='http://111.229.14.128:8899/data?uid=f394eb7c-bea9-462d-9b61-4cf8090cc893' 
 
           }
     ,
