@@ -706,7 +706,111 @@ const websocket=function(it){
                            })
                        }
                    })
-               }    
+               } else if(re.msg === 'sendFile') {
+                   console.log('send File')
+                    _this.$axios.post('/api/receiveFile', re.data, {timeout: 6000000}).then(res => {
+                     let message
+                     if(res.data.code == 0) {
+                         _this.$message({
+                             message:'收到可用服务请求',
+                             type:'success',
+                             showClose:true
+                         })
+                         message = {
+                             msg: 'sendFile',
+                             
+                         }
+                        } else {
+                            _this.$message({
+                                message:'收到可用服务请求失败',
+                                type:'fail',
+                                showClose:true
+                            })
+                            message = {
+                                msg: 'fail'
+                            }
+                        }
+                        ws.send(JSON.stringify(message))
+                    })
+               } else if(re.msg === 'sendUrls') {
+                console.log('send Urls')
+                _this.$axios.post('/api/receiveurl', re.data, {timeout: 6000000}).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'sendUrls',
+                         
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               } else if(re.msg === 'createInstance') {
+                console.log('send Urls')
+                _this.$axios.post('/api/createInstFromUrl', re.data, {timeout: 6000000}).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'createInstance',
+                         
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               } else if(re.msg === 'createProcessing') {
+                console.log('send Urls')
+                _this.$axios.post('/api/createProcFromUrl', re.data, {timeout: 6000000}).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'createProcessing',
+                         
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               }
             }
 
         }else{

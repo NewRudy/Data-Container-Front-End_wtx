@@ -574,9 +574,9 @@ import Content from '@/views/Content';
           <el-form-item label="Local Folder URL:">
             <el-input  v-model="simpleForm.path"></el-input>
           </el-form-item>
-          <el-form-item label="Local XML Folder Name:">
+          <!-- <el-form-item label="Local XML Folder Name:">
             <el-input  v-model="simpleForm.xmlPath"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <!-- 标签 -->
           <el-form-item label="Keywords" prop="name">
             <el-tag
