@@ -20,7 +20,7 @@ module.exports = {
                 }
             },
             '/pub':{
-                target:'http://111.229.14.128:8895',
+                target:'http://111.229.14.128:8898',
                 ws:true,
                 timeout:600000,
                 changOrigin:true,
