@@ -759,8 +759,15 @@ const websocket=function(it){
                     ws.send(JSON.stringify(message))
                 })
                } else if(re.msg === 'createInstance') {
-                console.log('send Urls')
-                _this.$axios.post('/api/createInstFromUrl', re.data, {timeout: 6000000}).then(res => {
+                console.log('create Instance: ', re)
+                console.log('create Instance')
+                console.log('type data: ', qs.stringify(re.data))
+                _this.$axios({
+                    url: '/api/createInstFromUrl',
+                    method: 'post',
+                    data: re.data,
+                    headers: {'Content-type': 'application/json'}
+                }).then(res => {
                  let message
                  if(res.data.code == 0) {
                      _this.$message({
@@ -770,7 +777,6 @@ const websocket=function(it){
                      })
                      message = {
                          msg: 'createInstance',
-                         
                      }
                     } else {
                         _this.$message({
@@ -785,8 +791,16 @@ const websocket=function(it){
                     ws.send(JSON.stringify(message))
                 })
                } else if(re.msg === 'createProcessing') {
-                console.log('send Urls')
-                _this.$axios.post('/api/createProcFromUrl', re.data, {timeout: 6000000}).then(res => {
+                console.log('create Processing: ', re)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/createProcFromUrl',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
                  let message
                  if(res.data.code == 0) {
                      _this.$message({

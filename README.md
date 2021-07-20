@@ -63,7 +63,7 @@ http://172.21.213.4:8084/task/f71ee90c-8907-431f-a85f-e172a4a47db6
 
 
 
-:1709/#/console/chart:1 Access to XMLHttpRequest at '' from origin '' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' 
+:1708/#/console/chart:1 Access to XMLHttpRequest at '' from origin '' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' 
 
 
 
