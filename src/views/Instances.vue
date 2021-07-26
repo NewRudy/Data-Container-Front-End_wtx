@@ -779,7 +779,7 @@
             <!-- 下载 -->
                         <el-tooltip
               effect="dark"
-              content="Delete the instnace"
+              content="Show in file explorer"
               placement="top-start"
             >
             <i
@@ -1047,7 +1047,7 @@ export default {
     chooseMethodData: undefined,
     chooseMethodInstancesCont: {},
     instanceLayerMethodChooseData: [],
-    folderLayerMethodDataChooseData: [],
+    folderLayerMethodDataChooseData: ['All File'],
 
     // loading
 
@@ -1060,7 +1060,7 @@ export default {
 
     dataOutCont: {},
     instanceLayerDataOut: [],
-    folderLayerDataOut: [],
+    folderLayerDataOut: ['All File'],
     operateDataOutFloder: false,
     methodResultName: "",
     chooseOutDataFile: undefined,
@@ -1163,13 +1163,13 @@ export default {
                 Object.keys(_this.nowGetDataListData).map(
                   (item) => (dataTemp[item] = _this.nowGetDataListData[item])
                 );
-                // if(_this.instnaceType == 'Data') {
+                // if(_this.nowGetDataListData.type == 'Data' || _this.chooseMethodDataDialog == false) {
                 _this.instancesCont = res.data.data;
                 if (folderName) {
                   _this.instanceLayer.push(dataTemp);
                   _this.folderLayer.push(folderName);
                 }
-                // } else if(_this.instnaceType == 'DataOut') {
+                // } else if(_this.nowGetDataListData.type == 'DataOut' && _this.chooseMethodDataDialog == false) {
                 //     _this.dataOutCont = res.data.data
                 //     if(folderName) {
                 //         _this.instanceLayerDataOut.push(dataTemp)
@@ -1177,7 +1177,8 @@ export default {
                 //     }
                 // } else {    // 这里应该还有四种，先留着了
                 //     _this.chooseMethodInstancesCont = res.data.data
-                //     _this.instanceLayerMethodChooseData.push(dataTemp)
+                //    _this.instanceLayerMethodChooseData.push(dataTemp)
+                //     _this.folderLayerMethodDataChooseData.push(folderName)
                 // }
                 console.log("foderLayer: ", _this.folderLayer);
                 console.log("instanceLayer: ", _this.instanceLayer);
@@ -1515,53 +1516,172 @@ export default {
     },
 
     intoFolder(Folder) {
+      this.nowGetDataListData.type == 'Data'
       console.log("into folder.");
       this.nowGetDataListData.uid = Folder.subContentId;
       this.nowGetDataListData.parentLevel = this.instancesCont.parentLevel;
       this.nowGetDataListData.currentPage = 1;
       this.getDataList(Folder.name);
     },
-    intoMethodDataFolder(Folder) {
-      this.nowGetDataListData.uid = Folder.subContentId;
-      this.nowGetDataListData.parentLevel =
-        _this.chooseMethodInstancesCont.parentLevel;
-      this.nowGetDataListData.currentPage = 1;
-      this.getDataList(Folder.name);
+    // intoMethodDataFolder(Folder) {
+    //   this.nowGetDataListData.type == 'Method'
+    //   this.nowGetDataListData.uid = Folder.subContentId;
+    //   this.nowGetDataListData.parentLevel = this.chooseMethodInstancesCont.parentLevel;
+    //   this.nowGetDataListData.currentPage = 1;
+    //   this.getDataList(Folder.name);
+    // },
+    intoMethodDataFolder(Folder) {  // 原来函数的写法
+          let _this=this
+            let info={
+                uid:Folder.subContentId,
+                userToken:localStorage.getItem('Authorization'),
+                type:'Data',
+                parentLevel:_this.chooseMethodInstancesCont.parentLevel,
+                subContConnect:{
+                    uid:_this.chooseMethodInstancesCont.uid,
+                    id:Folder.id
+                }//关联文件下的子instances
+            }
+            this.$axios.get('/api/instances',{
+                params:info
+            }).then((res)=>{
+                if(res.code===-1){
+                    _this.$message({
+                            message: 'instances request failed ',
+                            type: 'fail'
+                        });
+                }else{
+                    _this.chooseMethodInstancesCont=res.data.data
+                    //面包屑层次
+                    _this.folderLayerMethodDataChooseData.push(Folder.name)
+                    _this.instanceLayerMethodChooseData.push({
+                        type: _this.chooseMethodInstancesCont.type,
+                        uid:_this.chooseMethodInstancesCont.uid,
+                        parentLevel:_this.chooseMethodInstancesCont.parentLevel,
+                        userToken:_this.chooseMethodInstancesCont.userToken
+                    })
+                    
+                }
+            });
     },
+    // intoDataOutFolder(Folder) {
+    //   this.nowGetDataListData.type == 'DataOut'
+    //   this.nowGetDataListData.uid = Folder.subContentId;
+    //   this.nowGetDataListData.parentLevel = this.dataOutCont.parentLevel;
+    //   this.nowGetDataListData.currentPage = 1;
+    //   this.getDataList(Folder.name);
+    // },
     intoDataOutFolder(Folder) {
-      this.nowGetDataListData.uid = Folder.subContentId;
-      this.nowGetDataListData.parentLevel = this.dataOutCont.parentLevel;
-      this.nowGetDataListData.currentPage = 1;
-      this.getDataList(Folder.name);
+       let _this=this
+            let info={
+                uid:Folder.subContentId,
+                userToken:localStorage.getItem('Authorization'),
+                type:'DataOut',
+                parentLevel:_this.dataOutCont.parentLevel,
+                subContConnect:{
+                    uid:_this.dataOutCont.uid,
+                    id:Folder.id
+                }//关联文件下的子instances
+            }
+            this.$axios.get('/api/instances',{
+                params:info
+            }).then((res)=>{
+                if(res.code===-1){
+                    _this.$message({
+                            message: 'instances request failed ',
+                            type: 'fail'
+                        });
+                }else{
+                    _this.dataOutCont=res.data.data
+                    //面包屑层次
+                    _this.folderLayerDataOut.push(Folder.name)
+                    _this.instanceLayerDataOut.push({
+                        type: _this.dataOutCont.type,
+                        uid:_this.dataOutCont.uid,
+                        parentLevel:_this.dataOutCont.parentLevel,
+                        userToken:_this.dataOutCont.userToken
+                    })
+                    
+                }
+            });
     },
-
     backUpperFolder() {
       //面包屑层次
       console.log("back upppder folder.");
+      this.nowGetDataListData.type == 'Data'
       this.folderLayer.pop();
       let name = this.folderLayer.pop();
       this.instanceLayer.pop();
       this.nowGetDataListData = this.instanceLayer.pop();
       this.getDataList(name);
     },
-    backUpperMethodDataFolder() {
-      //面包屑层次
-      this.folderLayerMethodDataChooseData.pop();
-      this.instanceLayerMethodChooseData.pop();
-      this.nowGetDataListData =
-        this.instanceLayerMethodChooseData[
-          this.instanceLayerMethodChooseData.length - 1
-        ];
-      this.getDataList();
-    },
-    backUpperDataOutFolder() {
-      //面包屑层次
-      this.folderLayerDataOut.pop();
-      this.instanceLayerDataOut.pop();
-      this.nowGetDataListData =
-        this.instanceLayerDataOut[this.instanceLayerDataOut.length - 1];
-      this.getDataList();
-    },
+    // backUpperMethodDataFolder() {
+    //   //面包屑层次
+    //    this.nowGetDataListData.type == 'Method'
+    //   this.folderLayerMethodDataChooseData.pop();
+    //   this.instanceLayerMethodChooseData.pop();
+    //   this.nowGetDataListData =
+    //     this.instanceLayerMethodChooseData[
+    //       this.instanceLayerMethodChooseData.length - 1
+    //     ];
+    //   this.getDataList();
+    // },
+
+    // backUpperDataOutFolder() {
+    //   //面包屑层次
+    //   this.nowGetDataListData.type == 'DataOut'
+    //   this.folderLayerDataOut.pop();
+    //   this.instanceLayerDataOut.pop();
+    //   this.nowGetDataListData =
+    //     this.instanceLayerDataOut[this.instanceLayerDataOut.length - 1];
+    //   this.getDataList();
+    // },
+
+        backUpperMethodDataFolder(){
+            //面包屑层次
+            this.folderLayerMethodDataChooseData.pop()
+            this.instanceLayerMethodChooseData.pop()
+            let info=this.instanceLayerMethodChooseData[this.instanceLayerMethodChooseData.length-1]
+             
+            
+            let _this=this
+            this.$axios.get('/api/instances',{
+                params:info
+            }).then((res)=>{
+                if(res.code===-1){
+                    _this.$message({
+                            message: 'instances request failed ',
+                            type: 'fail'
+                        });
+                }else{
+                    _this.chooseMethodInstancesCont=res.data.data
+                   
+                    
+                }
+            })
+        },
+        backUpperDataOutFolder(){
+                //面包屑层次
+            this.folderLayerDataOut.pop()
+            this.instanceLayerDataOut.pop()
+            let info=this.instanceLayerDataOut[this.instanceLayerDataOut.length-1]
+             
+            
+            let _this=this
+            this.$axios.get('/api/instances',{
+                params:info
+            }).then((res)=>{
+                if(res.code===-1){
+                    _this.$message({
+                            message: 'instances request failed ',
+                            type: 'fail'
+                        });
+                }else{
+                    _this.dataOutCont=res.data.data
+                    
+                }
+            })
+        },
 
     addFolderAjax(newInstance) {
       if (!newInstance.parentLevel) {
@@ -2187,6 +2307,7 @@ export default {
             ? _this.inputConfigParams
             : undefined,
       };
+
       this.$axios.post("/api/invokeLocalMethod", postData).then((res) => {
         if (res.data.code == 0) {
           _this.$message({
