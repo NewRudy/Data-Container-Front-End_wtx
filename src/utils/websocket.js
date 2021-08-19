@@ -790,7 +790,8 @@ const websocket=function(it){
                     }
                     ws.send(JSON.stringify(message))
                 })
-               } else if(re.msg === 'createProcessing') {
+               } 
+               else if(re.msg === 'createProcessing') {
                 console.log('create Processing: ', re)
                 re.data['userToken'] = re.userToken
                 _this.$axios({
@@ -811,6 +812,76 @@ const websocket=function(it){
                      message = {
                          msg: 'createProcessing',
                          
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               }
+               else if(re.msg === 'invokeLocally') {
+                console.log('invokeLocally: ', re)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/invokeLocally',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'invokeLocally',  
+                         data: res.data.data               
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               }
+               else if(re.msg === 'uploadData') {
+                console.log('uploadData: ', re)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/uploadData',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'uploadData',
+                         data: res.data.data                 
                      }
                     } else {
                         _this.$message({
