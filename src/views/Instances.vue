@@ -779,7 +779,7 @@
             <!-- 下载 -->
                         <el-tooltip
               effect="dark"
-              content="Show in file explorer"
+              content="Show file"
               placement="top-start"
             >
             <i
@@ -2045,12 +2045,12 @@ export default {
             if (res.data.code == 0) {
               this.$message({
                 type: "success",
-                message: "Show in file explorer",
+                message: "Show file",
               });
             } else if (res.data.code == -1) {
               this.$message({
                 type: "fail",
-                message: "Show in file explorer error",
+                message: "Show file error",
               });
             }
           });
