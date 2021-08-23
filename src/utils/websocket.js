@@ -896,6 +896,41 @@ const websocket=function(it){
                     ws.send(JSON.stringify(message))
                 })
                }
+               else if(re.msg === 'findData') {
+                console.log('findData: ', re)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/findData',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
+                 let message
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                     message = {
+                         msg: 'findData',
+                         data: res.data.data                 
+                     }
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                        message = {
+                            msg: 'fail'
+                        }
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               }
             }
 
         }else{
