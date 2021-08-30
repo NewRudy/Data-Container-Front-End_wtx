@@ -828,38 +828,7 @@ const websocket=function(it){
                }
                else if(re.msg === 'invokeLocally') {
                 console.log('invokeLocally: ', re)
-                re.data['userToken'] = re.userToken
-                _this.$axios({
-                    method: 'post',
-                    url: '/api/invokeLocally',
-                    data: re.data,
-                    headers: {
-                        'Content-type': 'application/json'
-                    }
-                }).then(res => {
-                 let message
-                 if(res.data.code == 0) {
-                     _this.$message({
-                         message:'收到可用服务请求',
-                         type:'success',
-                         showClose:true
-                     })
-                     message = {
-                         msg: 'invokeLocally',  
-                         data: res.data.data               
-                     }
-                    } else {
-                        _this.$message({
-                            message:'收到可用服务请求失败',
-                            type:'fail',
-                            showClose:true
-                        })
-                        message = {
-                            msg: 'fail'
-                        }
-                    }
-                    ws.send(JSON.stringify(message))
-                })
+                pollingInvokeLocally(re, ws)
                }
                else if(re.msg === 'uploadData') {
                 console.log('uploadData: ', re)
@@ -953,5 +922,47 @@ const websocket=function(it){
     })
 
 }
+
+function pollingInvokeLocally(re, ws) {
+    re.data['userToken'] = re.userToken
+    _this.$axios({
+        method: 'post',
+        url: '/api/invokeLocally',
+        data: re.data,
+        headers: {
+            'Content-type': 'application/json'
+        }
+    }).then(res => {
+     let message
+     if(res.data.code == 0) {
+         if(res.data.data.status === 'success' || res.data.data.status === 'fail') {
+            _this.$message({
+                message:'收到可用服务请求',
+                type:'success',
+                showClose:true
+            })
+            message = {
+                msg: 'invokeLocally',  
+                data: res.data.data               
+            }
+            ws.send(JSON.stringify(message))
+         }
+         else {
+             setTimeout(()=>{pollingInvokeLocally(re, ws)}, 10000)   // 5 分钟轮询一次
+         }
+        } else {
+            _this.$message({
+                message:'收到可用服务请求失败',
+                type:'fail',
+                showClose:true
+            })
+            message = {
+                msg: 'fail'
+            }
+            ws.send(JSON.stringify(message))
+        }
+    })
+}
+
 export default websocket;
  
