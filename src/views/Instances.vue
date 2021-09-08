@@ -135,7 +135,7 @@
         width="30%"
       >
         <el-form style="text-align: center">
-          <el-form-item label="Local Folder URL:">
+          <el-form-item label="Local Path">
             <el-input
               v-model="linkInstanceFolder"
               style="width: 400px"

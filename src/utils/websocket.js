@@ -855,7 +855,7 @@ const websocket=function(it){
                 }
                 message = {
                     msg: 'invokeLocally',  
-                    msg: res.data.data
+                    data: res.data.data
                 }
                 ws.send(JSON.stringify(message))
                 })

@@ -571,7 +571,7 @@ import Content from '@/views/Content';
           <el-form-item label="Name:">
             <el-input  v-model="simpleForm.name"></el-input>
           </el-form-item>
-          <el-form-item label="Local Folder URL:">
+          <el-form-item label="Local Path">
             <el-input  v-model="simpleForm.path"></el-input>
           </el-form-item>
           <!-- <el-form-item label="Local XML Folder Name:">
