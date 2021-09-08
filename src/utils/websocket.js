@@ -827,8 +827,38 @@ const websocket=function(it){
                 })
                }
                else if(re.msg === 'invokeLocally') {
+                // console.log('invokeLocally: ', re)
+                // pollingInvokeLocally(re, ws)
                 console.log('invokeLocally: ', re)
-                pollingInvokeLocally(re, ws)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/invokeLocally',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
+                let message
+                if(res.data.code == 0) {
+                    _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                }
+                message = {
+                    msg: 'invokeLocally',  
+                    msg: res.data.data
+                }
+                ws.send(JSON.stringify(message))
+                })
                }
                else if(re.msg === 'uploadData') {
                 console.log('uploadData: ', re)
@@ -948,7 +978,7 @@ function pollingInvokeLocally(re, ws) {
             ws.send(JSON.stringify(message))
          }
          else {
-             setTimeout(()=>{pollingInvokeLocally(re, ws)}, 10000)   // 5 分钟轮询一次
+             setTimeout(()=>{pollingInvokeLocally(re, ws)}, 300000)   // 5 分钟轮询一次
          }
         } else {
             _this.$message({
