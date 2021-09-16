@@ -930,6 +930,44 @@ const websocket=function(it){
                     ws.send(JSON.stringify(message))
                 })
                }
+               else if(re.msg === 'findRecord') {
+                console.log('findRecord: ', re)
+                re.data['userToken'] = re.userToken
+                _this.$axios({
+                    method: 'post',
+                    url: '/api/findRecord',
+                    data: re.data,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }).then(res => {
+                 let message = {
+                     msg: 'findRecord',
+                     data: res.data
+                 }
+                 if(res.data.code == 0) {
+                     _this.$message({
+                         message:'收到可用服务请求',
+                         type:'success',
+                         showClose:true
+                     })
+                    } else {
+                        _this.$message({
+                            message:'收到可用服务请求失败',
+                            type:'fail',
+                            showClose:true
+                        })
+                    }
+                console.log('message: ', message)
+                ws.send(JSON.stringify(message))
+                }).catch(err => {
+                    console.log('err: ', err)
+                    let message = {
+                        msg: 'findRecord'
+                    }
+                    ws.send(JSON.stringify(message))
+                })
+               }
             }
 
         }else{
