@@ -31,6 +31,7 @@
           <ul>
           <li><a href="https://github.com/Makoq" target="_blank">Zhenxv Lan</a> </li>
           <li><a href="https://github.com/limingyuan123" target="_blank">Mingyuan Li</a> </li>
+          <li><a href="https://github.com/Ting-xin" target="_blank">Tian Wu</a> </li>
            
         </ul>
 
