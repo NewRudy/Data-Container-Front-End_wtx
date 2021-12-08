@@ -934,9 +934,8 @@ const websocket=function(it){
                 console.log('findRecord: ', re)
                 re.data['userToken'] = re.userToken
                 _this.$axios({
-                    method: 'post',
-                    url: '/api/findRecord',
-                    data: re.data,
+                    method: 'get',
+                    url: '/api/record?recordId=' + re.data.recordId,
                     headers: {
                         'Content-type': 'application/json'
                     }
